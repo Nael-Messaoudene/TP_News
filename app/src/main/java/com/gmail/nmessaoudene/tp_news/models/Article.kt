@@ -1,11 +1,11 @@
 package com.gmail.nmessaoudene.tp_news.models
 
-data class Article(
+class Article(
+    val source: Source?,
     val author: String,
     val content: String,
     val description: String,
     val publishedAt: String,
-    val source: Source,
     val title: String,
     val url: String,
     val urlToImage: String

@@ -3,6 +3,8 @@ package com.gmail.nmessaoudene.tp_news.dal.online
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.gmail.nmessaoudene.tp_news.dal.NewsDataSource
+import com.gmail.nmessaoudene.tp_news.dal.online.utils.toArticle
+import com.gmail.nmessaoudene.tp_news.dal.services.RetrofitApiService
 import com.gmail.nmessaoudene.tp_news.models.Article
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -10,21 +12,21 @@ import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Query
 
-class ArticleOnlineDataSource : NewsDataSource {
-
-
+class ArticleOnlineService : NewsDataSource {
     private val service: RetrofitApiService
 
     init {
         val retrofit = buildClient()
-        //Init the api service with retrofit
+        // Init the api service with retrofit
         service = retrofit.create(RetrofitApiService::class.java)
     }
 
     /**
      * Configure retrofit
      */
+
     private fun buildClient(): Retrofit {
         val httpClient = OkHttpClient.Builder().apply {
             addLogInterceptor(this)
@@ -58,7 +60,7 @@ class ArticleOnlineDataSource : NewsDataSource {
                 val original = chain.request()
                 val originalHttpUrl = original.url
                 val url = originalHttpUrl.newBuilder()
-                    .addQueryParameter("apikey", apiKey)
+                    .addQueryParameter("apiKey", apiKey)
                     .build()
 
                 val requestBuilder = original.newBuilder()
@@ -69,23 +71,24 @@ class ArticleOnlineDataSource : NewsDataSource {
         })
     }
 
-    override fun getArticles(): LiveData<List<Article>> {
+    override fun getArticles(query: String): LiveData<List<Article>> {
         val _data = MutableLiveData<List<Article>> ()
 
-        val articleList = service.getArticles().execute().body()?.articles ?: listOf()
+        val articleList = service.getArticles(query).execute().body()?.articles ?: listOf()
 
         // TODO Convertir la liste des articles du modèle du web service vers le modèle métier ArcicleItem --> Article
 
         val articles = articleList.map {
-
+            it.toArticle()
         }
 
-        _data.value = articles
+        _data.postValue(articles)
+        return _data
     }
 
     companion object {
         private const val apiKey = "adc1fda4fe9049f3903bbad8c239253f"
-        private const val apiUrl = "http://newsapi.org/v2"
+        private const val apiUrl = "https://newsapi.org/v2/"
     }
 
 }

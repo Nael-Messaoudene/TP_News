@@ -7,13 +7,13 @@ import com.gmail.nmessaoudene.tp_news.models.Source
 
 fun ItemResponse.toArticle() = Article(
     author = author ?: "",
-    content = content ?: "",
     title = title ?: "",
     description = description ?: "",
     publishedAt = publishedAt ?: "",
     source = source?.toSource() ?: null,
     url = url ?: "",
-    urlToImage = urlToImage ?: ""
+    urlToImage = urlToImage ?: "",
+    content = content ?: ""
 )
 
 fun SourceResponse.toSource() = Source(
