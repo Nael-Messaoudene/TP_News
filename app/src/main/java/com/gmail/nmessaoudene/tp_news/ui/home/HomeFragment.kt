@@ -34,7 +34,9 @@ class HomeFragment : Fragment() {
         homeViewModel.articles.observe(
             viewLifecycleOwner,
             Observer {
-                Log.d("Articles", it.toString())
+                if (it != null){
+                    Log.d("Articles", it.toString())
+                }
             }
         )
         return root
